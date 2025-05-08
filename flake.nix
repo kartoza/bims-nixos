@@ -9,7 +9,7 @@
     with inputs; let
       secrets = builtins.fromJSON (builtins.readFile "${self}/secrets.json");
 
-      nixpkgsWithOverlays = with inputs; rec {
+      nixpkgsWithOverlays = {
         config = {
           allowUnfree = true;
           permittedInsecurePackages = [
@@ -52,7 +52,6 @@
         hostname = "bims";
         username = "bims"; # DONE: Set your preferred username here
         modules = [
-          # DONE: If your hardware is Intel, replace this with ./intel.nix
           ./amd.nix
           disko.nixosModules.disko
           ./robot.nix
@@ -68,7 +67,6 @@
         remoteBuild = true;
         nodes = {
           robot = {
-            # DONE: Put the address of your Robot server here
             hostname = "37.27.227.42";
             profiles.system = {
               path = self.nixosConfigurations.robot;
@@ -77,7 +75,40 @@
         };
       };
 
-      # This is highly advised, and will prevent many possible mistakes
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+
+      devShells.x86_64-linux.default = let
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          config.allowUnfree = true; # needed for vscode
+        };
+      in
+        pkgs.mkShell {
+          packages = [
+            pkgs.git
+            pkgs.vim
+            pkgs.jq
+            pkgs.alejandra
+            pkgs.vscode
+          ];
+
+          shellHook = ''
+            echo " ----------------------------------------------------------------------------"
+            echo "   BIMS Nixos Configuration"
+            echo " ----------------------------------------------------------------------------"
+            echo "✅ Dev shell for NixOS flake activated"
+            echo "👀 nix flake show - show the contents of this flake"
+            echo "🛠️ nixos-rebuild switch --flake .#robot --target-host root@37.27.227.42 --build-host root@37.27.227.42 --use-remote-sudo"
+            echo "✏️ ./vscode.sh - launch vscode with the current flake"
+            echo ""
+            echo "🚧 Danger Zone:🚧"
+            echo "   Destroy and completely reformat and reinstall the system"
+            echo "   This will destroy all data on the target system!"
+            echo "   Use with caution!"
+            echo "   And it will not prompt you for confirmation!"
+            echo "🚩 nix run github:numtide/nixos-anywhere -- --flake .#robot root@37.27.227.42"
+            echo " ----------------------------------------------------------------------------"
+          '';
+        };
     };
 }
