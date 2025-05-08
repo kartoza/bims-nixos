@@ -1,6 +1,13 @@
+{ pkgs, ... }:
+
 {
   imports = [
     ./disk-config.nix
+  ];
+
+  environment.systemPackages = with pkgs; [
+    vim
+    zellij
   ];
 
   boot.loader.grub = {
@@ -12,6 +19,11 @@
 
   boot.loader.efi.canTouchEfiVariables = false; # Don't attempt to write NVRAM entries
 
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 22 80 443 ];
+    allowedUDPPorts = [ ];
+  };
 
   services.openssh = {
     enable = true;
