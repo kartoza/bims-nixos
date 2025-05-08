@@ -3,7 +3,12 @@
     ./disk-config.nix
   ];
 
-  boot.loader.grub.enable = true;
+ boot.loader.grub.enable = true;
+ boot.loader.grub.efiSupport = true;
+ boot.loader.grub.device = "nodev"; # for UEFI
+ boot.loader.systemd-boot.enable = false;
+ boot.loader.efi.canTouchEfiVariables = true;
+
 
   services.openssh = {
     enable = true;
