@@ -3,11 +3,14 @@
     ./disk-config.nix
   ];
 
- boot.loader.grub.enable = true;
- boot.loader.grub.efiSupport = true;
- boot.loader.grub.device = "nodev"; # for UEFI
- boot.loader.systemd-boot.enable = false;
- boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.grub = {
+    enable = true;
+    efiSupport = true;
+    efiInstallAsRemovable = true; # Install GRUB to fallback path: EFI/BOOT/BOOTX64.EFI
+    devices = [ "nodev" ];         # Avoids trying to install to MBR (BIOS mode)
+  };
+
+  boot.loader.efi.canTouchEfiVariables = false; # Don't attempt to write NVRAM entries
 
 
   services.openssh = {
