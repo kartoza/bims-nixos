@@ -3,7 +3,7 @@
     disk = {
       one = {
         type = "disk";
-        # FIXME: Make sure the device names and counts match the outputs in the Hetzner Recovery System
+        # DONE: Make sure the device names and counts match the outputs in the Hetzner Recovery System
         device = "/dev/nvme0n1";
         content = {
           type = "gpt";

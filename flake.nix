@@ -1,22 +1,9 @@
 {
   description = "NixOS configuration";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
-  inputs.nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-
-  inputs.home-manager.url = "github:nix-community/home-manager/release-23.11";
-  inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
-  inputs.nur.url = "github:nix-community/NUR";
-
-  inputs.nix-index-database.url = "github:Mic92/nix-index-database";
-  inputs.nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
-
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
   inputs.disko.url = "github:nix-community/disko";
   inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
-
-  inputs.deploy-rs.url = "github:serokell/deploy-rs";
-  inputs.deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = inputs:
     with inputs; let
@@ -26,33 +13,18 @@
         config = {
           allowUnfree = true;
           permittedInsecurePackages = [
-            # FIXME:: add any insecure packages you absolutely need here
+            # DONE:: add any insecure packages you absolutely need here
           ];
         };
-        overlays = [
-          nur.overlay
-          (_final: prev: {
-            # this allows us to reference pkgs.unstable
-            unstable = import nixpkgs-unstable {
-              inherit (prev) system;
-              inherit config;
-            };
-          })
-        ];
       };
 
       configurationDefaults = args: {
         nixpkgs = nixpkgsWithOverlays;
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-        home-manager.backupFileExtension = "hm-backup";
-        home-manager.extraSpecialArgs = args;
       };
 
       argDefaults = {
-        inherit secrets inputs self nix-index-database;
+        inherit secrets inputs self;
         channels = {
-          inherit nixpkgs nixpkgs-unstable;
         };
       };
 
@@ -70,7 +42,6 @@
           modules =
             [
               (configurationDefaults specialArgs)
-              home-manager.nixosModules.home-manager
             ]
             ++ modules;
         };
@@ -78,10 +49,10 @@
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
 
       nixosConfigurations.robot = mkNixosConfiguration {
-        hostname = "nixos";
-        username = "nixos"; # FIXME: Set your preferred username here
+        hostname = "bims";
+        username = "bims"; # DONE: Set your preferred username here
         modules = [
-          # FIXME: If your hardware is Intel, replace this with ./intel.nix
+          # DONE: If your hardware is Intel, replace this with ./intel.nix
           ./amd.nix
           disko.nixosModules.disko
           ./robot.nix
@@ -97,10 +68,10 @@
         remoteBuild = true;
         nodes = {
           robot = {
-            # FIXME: Put the address of your Robot server here
-            hostname = "eg. 88.99.71.78";
+            # DONE: Put the address of your Robot server here
+            hostname = "37.27.227.42";
             profiles.system = {
-              path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.robot;
+              path = self.nixosConfigurations.robot;
             };
           };
         };

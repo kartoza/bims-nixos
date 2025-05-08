@@ -1,5 +1,5 @@
 {
-  # FIXME: uncomment the next line if you want to reference your GitHub/GitLab access tokens and other secrets
+  # DONE: uncomment the next line if you want to reference your GitHub/GitLab access tokens and other secrets
   # secrets,
   username,
   hostname,
@@ -7,8 +7,8 @@
   inputs,
   ...
 }: {
-  # FIXME: change to your tz! look it up with "timedatectl list-timezones"
-  time.timeZone = "America/Los_Angeles";
+  # DONE: change to your tz! look it up with "timedatectl list-timezones"
+  time.timeZone = "Europe/Lisbon";
 
   systemd.tmpfiles.rules = [
     "d /home/${username}/.config 0755 ${username} users"
@@ -17,10 +17,6 @@
 
   networking.hostName = "${hostname}";
 
-  # FIXME: change your shell here if you don't want zsh
-  programs.zsh.enable = true;
-  environment.pathsToLink = ["/share/zsh"];
-  environment.shells = [pkgs.zsh];
 
   environment.enableAllTerminfo = true;
 
@@ -28,26 +24,19 @@
 
   users.users.${username} = {
     isNormalUser = true;
-    # FIXME: change your shell here if you don't want zsh
-    shell = pkgs.zsh;
     extraGroups = [
       "wheel"
-      # FIXME: uncomment the next line if you want to run docker without sudo
-      # "docker"
+      # DONE: uncomment the next line if you want to run docker without sudo
+      "docker"
     ];
     openssh.authorizedKeys.keys = [
-      # FIXME: Set your own public key here!
-      "ssh-rsa ..."
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICMP26uVkGW0ShtaKr3qW02rxdE5yDQp66D8+LP05B0y dimas@kartoza.com"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJm3ACcKCTZq0IcCB6pIXudFiW35/PfUQlMrX5DLrZ5H tim@kartoza.com"
     ];
   };
 
-  home-manager.users.${username} = {
-    imports = [
-      ./home.nix
-    ];
-  };
 
-  system.stateVersion = "22.05";
+  system.stateVersion = "24.11";
 
   virtualisation.docker = {
     enable = true;
@@ -58,12 +47,6 @@
   nix = {
     settings = {
       trusted-users = [username];
-      # FIXME: use your access tokens from secrets.json here to be able to clone private repos on GitHub and GitLab
-      # access-tokens = [
-      #   "github.com=${secrets.github_token}"
-      #   "gitlab.com=OAuth2:${secrets.gitlab_token}"
-      # ];
-
       accept-flake-config = true;
       auto-optimise-store = true;
     };
@@ -80,7 +63,7 @@
       "/nix/var/nix/profiles/per-user/root/channels"
     ];
 
-    package = pkgs.nixFlakes;
+    package = pkgs.nixVersions.stable;
     extraOptions = ''experimental-features = nix-command flakes'';
 
     gc = {
