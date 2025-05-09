@@ -56,8 +56,8 @@
           disko.nixosModules.disko
           ./robot.nix
           ./linux.nix
-	  ./nginx.nix
-	  ./storage.nix
+          ./nginx.nix
+          ./storage.nix
         ];
       };
 
