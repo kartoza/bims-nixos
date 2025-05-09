@@ -49,17 +49,17 @@
     ];
   };
 
-  services.prometheus.exporters = {
-    node = {
-      enable = true;
-      enableMdadm = true;
-    };
-    docker = {
-      enable = true;
-      listenAddress = "localhost";
-      port = 9323;
-    };
-  };
+  # services.prometheus.exporters = {
+  #   node = {
+  #     enable = true;
+  #     enableMdadm = true;
+  #   };
+  #   docker = {
+  #     enable = true;
+  #     listenAddress = "localhost";
+  #     port = 9323;
+  #   };
+  # };
 
   services.prometheus.alertmanager = {
     enable = true;
