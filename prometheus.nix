@@ -6,7 +6,7 @@
 }: {
   services.prometheus = {
     enable = true;
-    web.listenAddress = "127.0.0.1";
+    listenAddress = "127.0.0.1";
     scrapeConfigs = [
       {
         job_name = "node";
