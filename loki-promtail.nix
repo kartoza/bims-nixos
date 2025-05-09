@@ -2,6 +2,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
   services.loki = {
@@ -78,27 +79,38 @@
     };
   };
 
-  # Promtail configuration
+  # Updated Promtail configuration with improved permissions
   services.promtail = {
     enable = true;
+
+    # Add these lines to ensure proper permissions
+    extraFlags = [
+      "-config.expand-env=true"
+    ];
+
     configuration = {
       server = {
         http_listen_port = 9080;
         grpc_listen_port = 0;
       };
+
       positions = {
-        filename = "/var/lib/promtail/positions.yaml";
+        filename = "/tmp/positions.yaml"; # Changed from /var/lib/promtail/positions.yaml
       };
+
       clients = [
         {
           url = "http://localhost:3100/loki/api/v1/push";
         }
       ];
+
       scrape_configs = [
         {
           job_name = "journal";
           journal = {
+            json = false;
             max_age = "12h";
+            path = "/var/log/journal";
             labels = {
               job = "systemd-journal";
               host = "${config.networking.hostName}";
@@ -111,15 +123,34 @@
             }
           ];
         }
+        # Simple file-based logs as a fallback
+        {
+          job_name = "system";
+          static_configs = [
+            {
+              targets = ["localhost"];
+              labels = {
+                job = "syslog";
+                host = "${config.networking.hostName}";
+                __path__ = "/var/log/syslog";
+              };
+            }
+          ];
+        }
       ];
     };
   };
 
-  # Create necessary directories
+  # Create necessary directories with appropriate permissions
   systemd.tmpfiles.rules = [
-    "d /var/lib/loki 0750 loki loki -"
-    "d /var/lib/loki/chunks 0750 loki loki -"
-    "d /var/lib/loki/rules 0750 loki loki -"
-    "d /var/lib/loki/compactor 0750 loki loki -"
+    "d /var/lib/loki 0755 loki loki -"
+    "d /var/lib/loki/chunks 0755 loki loki -"
+    "d /var/lib/loki/rules 0755 loki loki -"
+    "d /var/lib/loki/compactor 0755 loki loki -"
+    "d /tmp/positions 1777 - - -" # World-writable directory for positions file
+    "f /tmp/positions.yaml 0666 - - -" # World-writable positions file
   ];
+
+  # Add the following to give Promtail read access to journals
+  users.groups.systemd-journal.members = ["promtail"];
 }
