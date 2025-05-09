@@ -58,6 +58,10 @@
           ./linux.nix
           ./nginx.nix
           ./storage.nix
+          ./grafana.nix
+          ./loki-promtail.nix
+          ./prometheus.nix
+          ./grafana-dashboards.nix
         ];
       };
 

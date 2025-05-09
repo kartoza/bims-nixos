@@ -125,6 +125,38 @@ this project uses a flat layout without any nesting or modularization.
     * User groups are set here
     * NixOS options are set here
 
+
+```mermaid
+graph TD
+  subgraph Monitoring Stack
+
+    Prometheus["🟦 Prometheus"]
+    Grafana["🟩 Grafana"]
+    Loki["🟪 Loki"]
+    Promtail["📄 Promtail"]
+    NodeExporter["🔧 node_exporter"]
+    DockerExporter["🐳 docker_exporter"]
+    Alertmanager["🚨 Alertmanager"]
+    Nginx["🌐 Nginx Reverse Proxy"]
+    ntfy["📬 ntfy.sh"]
+
+  end
+
+  NodeExporter --> Prometheus
+  DockerExporter --> Prometheus
+  Loki --> Prometheus
+  Promtail --> Loki
+
+  Prometheus --> Alertmanager
+  Alertmanager --> ntfy
+
+  Prometheus --> Grafana
+  Loki --> Grafana
+
+  Grafana --> Nginx
+```
+
+
 ## Hetzner Storage Box Setup with SSH Key Authentication on NixOS
 
 This guide explains how to configure a Hetzner Storage Box to allow SSH access from a NixOS server using a securely stored private key at `/etc/keys/id_storagebox`.
