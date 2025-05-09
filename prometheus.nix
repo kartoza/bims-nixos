@@ -22,56 +22,58 @@
       }
     ];
     alertmanagers = [{static_configs = [{targets = ["localhost:9093"];}];}];
-    rules = [
-      {
-        groups = [
-          {
-            name = "default-alerts";
-            rules = [
-              {
-                alert = "HighCPUUsage";
-                expr = "100 - (avg by(instance)(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100) > 90";
-                for = "5m";
-                labels.severity = "warning";
-                annotations.description = "High CPU usage detected.";
-              }
-              {
-                alert = "MDRaidDegraded";
-                expr = "node_md_disks_required - node_md_disks_active > 0";
-                for = "1m";
-                labels.severity = "critical";
-                annotations.description = "mdadm RAID degraded!";
-              }
-            ];
-          }
-        ];
-      }
+
+    # New format: provide rules as files
+    ruleFiles = [
+      (pkgs.writeText "default-alerts.yml" ''
+        groups:
+          - name: default-alerts
+            rules:
+            - alert: HighCPUUsage
+              expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                description: "High CPU usage detected."
+            - alert: MDRaidDegraded
+              expr: node_md_disks_required - node_md_disks_active > 0
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                description: "mdadm RAID degraded!"
+      '')
     ];
   };
 
-  # services.prometheus.exporters = {
-  #   node = {
-  #     enable = true;
-  #     enableMdadm = true;
-  #   };
-  #   docker = {
-  #     enable = true;
-  #     listenAddress = "localhost";
-  #     port = 9323;
-  #   };
-  # };
+  # Node exporter configuration
+  services.prometheus.exporters.node = {
+    enable = true;
+    enabledCollectors = ["mdadm"];
+  };
+
+  # Docker metrics via daemon configuration
+  virtualisation.docker.extraOptions = "--metrics-addr 127.0.0.1:9323 --experimental";
 
   services.prometheus.alertmanager = {
     enable = true;
-    webExternalUrl = "http://localhost:9093";
+    listenAddress = "localhost";
+    port = 9093;
     configuration = {
-      route.receiver = "ntfy";
+      route = {
+        receiver = "ntfy";
+        group_wait = "30s";
+        group_interval = "5m";
+        repeat_interval = "4h";
+      };
       receivers = [
         {
           name = "ntfy";
           webhook_configs = [
             {
               url = "https://ntfy.sh/your-topic";
+              send_resolved = true;
             }
           ];
         }
