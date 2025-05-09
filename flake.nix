@@ -61,7 +61,6 @@
           ./grafana.nix
           ./loki-promtail.nix
           ./prometheus.nix
-          ./alertmanager.nix
           ./grafana-dashboards.nix
         ];
       };

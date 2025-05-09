@@ -61,7 +61,7 @@
     };
   };
 
-  services.alertmanager = {
+  services.prometheus.alertmanager = {
     enable = true;
     webExternalUrl = "http://localhost:9093";
     configuration = {
