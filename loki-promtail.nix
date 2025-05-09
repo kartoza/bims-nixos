@@ -68,6 +68,8 @@
         working_directory = "/var/lib/loki/compactor"; # Set working directory
         retention_enabled = true;
         compaction_interval = "5m";
+        delete_request_store = "filesystem"; # Add this line for retention configuration
+        delete_request_cancel_period = "24h";
       };
 
       analytics = {
