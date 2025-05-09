@@ -17,10 +17,15 @@
 
   networking.hostName = "${hostname}";
 
-
   environment.enableAllTerminfo = true;
 
   security.sudo.wheelNeedsPassword = false;
+
+  # Software raid issue notices
+  services.mdadm = {
+    enable = true;
+    emailAddress = "dimas@kartoza.com";
+  };
 
   users.users.${username} = {
     isNormalUser = true;
@@ -34,7 +39,6 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJm3ACcKCTZq0IcCB6pIXudFiW35/PfUQlMrX5DLrZ5H tim@kartoza.com"
     ];
   };
-
 
   system.stateVersion = "24.11";
 
