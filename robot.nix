@@ -8,6 +8,7 @@
   environment.systemPackages = with pkgs; [
     vim
     zellij
+    git
   ];
 
   boot.loader.grub = {
