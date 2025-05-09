@@ -36,6 +36,8 @@ in {
     };
   };
 
+  systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false;
+
   security.acme = {
     acceptTerms = true;
     defaults = {
