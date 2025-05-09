@@ -21,10 +21,12 @@
 
   security.sudo.wheelNeedsPassword = false;
 
-  # Software raid issue notices
-  services.mdadm = {
+  # Software raid issue notices - Updated path for NixOS 24.11
+  boot.swraid = {
     enable = true;
-    emailAddress = "dimas@kartoza.com";
+    mdadmConf = ''
+      MAILADDR dimas@kartoza.com
+    '';
   };
 
   users.users.${username} = {
