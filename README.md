@@ -93,11 +93,21 @@ Host key verification failed.
 ```
 * Now you can SSH into the server
 * In a local terminal window, you can apply updated configurations to the remote server
+
+There are two ways to do this:
+
+### Directly on the server
 ```bash
-nix run github:serokell/deploy-rs -- --remote-build -s .#robot
+sudo nixos-rebuild switch --flake ~/bims-nixos#robot
 ```
 
-Note: If developing in Rust, you'll still be managing your toolchains and components like `rust-analyzer` with `rustup`!
+### From a remote client that has Nix available
+
+🚩 Note: Currently only works if you have the same system architecture as the server.
+
+```bash
+nixos-rebuild switch --flake .#robot --target-host root@37.27.227.42 --build-host root@37.27.227.42 --use-remote-sudo
+```
 
 ## Project Layout
 
@@ -114,3 +124,33 @@ this project uses a flat layout without any nesting or modularization.
     * The default shell is set here
     * User groups are set here
     * NixOS options are set here
+
+## Hetzner Storage Box Setup with SSH Key Authentication on NixOS
+
+This guide explains how to configure a Hetzner Storage Box to allow SSH access from a NixOS server using a securely stored private key at `/etc/keys/id_storagebox`.
+
+---
+
+### 1. Generate SSH Key
+
+Run these commands on your NixOS server:
+
+```bash
+sudo mkdir -p /etc/keys
+sudo ssh-keygen -t rsa -b 4096 -f /etc/keys/id_storagebox -N ""
+sudo chmod 600 /etc/keys/id_storagebox
+sudo chown root:root /etc/keys/id_storagebox
+```
+
+### 2. Upload Public Key to Storage Box
+
+Hetzner requires a special method to install the SSH key using port 23 and a built-in helper.
+
+Replace uXXXXX with your actual Storage Box ID:
+
+```
+cat /etc/keys/id_storagebox.pub | ssh -p 23 uXXXXX@uXXXXX.your-storagebox.de install-ssh-key
+```
+
+Do this from any other clients that need access to the storage box too (e.g. to mirror the backups locally using restic)
+
