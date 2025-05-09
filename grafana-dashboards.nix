@@ -32,7 +32,7 @@
   # Place dashboard json files in /etc/grafana/dashboards/
   environment.etc = {
     "grafana/dashboards/system-dashboard.json" = {
-      source = ./dashboards/system-dashboard.json;
+      source = ./system-dashboard.json;
       mode = "0644";
     };
   };
