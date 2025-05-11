@@ -47,7 +47,6 @@ in {
     acceptTerms = true;
     defaults = {
       email = "dimas@kartoza.com";
-      server = "https://acme-staging-v02.api.letsencrypt.org/directory";
     };
   };
 }
