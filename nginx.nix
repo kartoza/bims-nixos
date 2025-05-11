@@ -6,6 +6,7 @@
   ...
 }: let
   domain = "bims-mothership.kartoza.com";
+  grafanaSubdomain = "stats.bims-mothership.kartoza.com";
 in {
   environment.systemPackages = with pkgs; [nginx];
 
@@ -28,9 +29,13 @@ in {
       proxyPass = "http://127.0.0.1:63307";
       proxyWebsockets = true;
     };
+  };
 
-    # Grafana on subpath
-    locations."/grafana/" = {
+  services.nginx.virtualHosts."${grafanaSubdomain}" = {
+    forceSSL = true;
+    enableACME = true;
+
+    locations."/" = {
       proxyPass = "http://127.0.0.1:3000/";
       proxyWebsockets = true;
     };
