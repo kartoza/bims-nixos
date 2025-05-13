@@ -56,7 +56,6 @@
           disko.nixosModules.disko
           ./robot.nix
           ./linux.nix
-          ./nginx.nix
           ./storage.nix
           ./grafana.nix
           ./loki-promtail.nix
@@ -64,6 +63,8 @@
           ./grafana-dashboards.nix
         ];
       };
+      
+      systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false; 
 
       deploy = {
         sshUser = "root";
