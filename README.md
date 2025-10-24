@@ -1,67 +1,17 @@
 # nixos-hetzner-robot-starter
 
-This repository is intended to be a sane, batteries-included starter template
-for running a LunarVim-powered remote NixOS development environment on a
-Hetzner Robot dedicated server. It exists as a sister-project of
-[nixos-wsl-starter](https://github.com/lgug2z/nixos-wsl-starter) and
-[nixos-hetzner-cloud-starter](https://github.com/lgug2z/nixos-hetzner-cloud-starter).
-
-If you don't want to dig into NixOS too much right now, the only file you need
-to concern yourself with is [home.nix](home.nix). This is where you can add and
-remove binaries to your global `$PATH`.
-
-Go to [https://search.nixos.org](https://search.nixos.org/packages) to find the
-correct package names, though usually they will be what you expect them to be
-in other package managers.
-
-`unstable-packages` is for packages that you want to always keep at the latest
-released versions, and `stable-packages` is for packages that you want to track
-with the current release of NixOS (currently 23.11).
-
-If you want to update the versions of the available `unstable-packages`, run
-`nix flake update` to pull the latest version of the Nixpkgs repository and
-then apply the changes.
-
-Make sure to look at all the `FIXME` notices in the various files which are
-intended to direct you to places where you may want to make configuration
-tweaks.
-
-If you found this starter template useful, please consider
-[sponsoring](https://github.com/sponsors/LGUG2Z) and [subscribing to my YouTube
-channel](https://www.youtube.com/channel/UCeai3-do-9O4MNy9_xjO6mg?sub_confirmation=1).
-
-## What Is Included
-
-This starter is a lightly-opinionated take on a productive terminal-driven
-development environment based on my own preferences. However, it is trivial to
-customize to your liking both by removing and adding tools that you prefer.
-
-* The default editor is `lvim`
-* The default shell is `zsh`
-* `docker` is enabled by default
-* The prompt is [Starship](https://starship.rs/)
-* [`fzf`](https://github.com/junegunn/fzf),
-  [`lsd`](https://github.com/lsd-rs/lsd),
-  [`zoxide`](https://github.com/ajeetdsouza/zoxide), and
-  [`broot`](https://github.com/Canop/broot) are integrated into `zsh` by
-  default
-    * These can all be disabled easily by setting `enable = false` in
-      [home.nix](home.nix), or just removing the lines all together
-* [`direnv`](https://github.com/direnv/direnv) is integrated into `zsh` by
-  default
-* `git` config is generated in [home.nix](home.nix) with options provided to
-  enable private HTTPS clones with secret tokens
-* `zsh` config is generated in [home.nix](home.nix) and includes git aliases,
-  useful WSL aliases, and
-  [sensible`$WORDCHARS`](https://lgug2z.com/articles/sensible-wordchars-for-most-developers/)
-
-## Quickstart
-
-[![Watch the walkthrough video](https://img.youtube.com/vi/nlX8g0NXW1M/hqdefault.jpg)](https://www.youtube.com/watch?v=nlX8g0NXW1M)
-
 * Order a server on Hetzner Robot
     * For this tutorial, I am using an [AX41-NVMe](https://www.hetzner.com/dedicated-rootserver/ax41-nvme)
-    * The `disk-config.nix` file sets software RAID 1 on the 2x 512GB NVMe SSDs (just as the delivered server has)
+    * The `disk-config.nix` file sets software RAID 1 on the 2x 2TB NVMe SSDs (just as the delivered server has)
+
+```
+[bims@bims:~]$ lsblk -d -o NAME,MODEL,SIZE,TYPE,ROTA
+NAME    MODEL                       SIZE TYPE ROTA
+nvme0n1 SAMSUNG MZQL21T9HCJR-00A07  1.7T disk    0
+nvme1n1 SAMSUNG MZQL21T9HCJR-00A07  1.7T disk    0
+```
+
+
 * Set your SSH public key in `robot.nix` and `linux.nix`
 * Go through all the `FIXME:` notices in this repo and make changes wherever
   you want
@@ -97,6 +47,7 @@ Host key verification failed.
 There are two ways to do this:
 
 ### Directly on the server
+
 ```bash
 sudo nixos-rebuild switch --flake ~/bims-nixos#robot
 ```
@@ -107,6 +58,12 @@ sudo nixos-rebuild switch --flake ~/bims-nixos#robot
 
 ```bash
 nixos-rebuild switch --flake .#robot --target-host root@37.27.227.42 --build-host root@37.27.227.42 --use-remote-sudo
+```
+
+### Logging on to the server after installation
+
+```
+ssh bims@37.27.227.42
 ```
 
 ## Project Layout
@@ -159,7 +116,9 @@ graph TD
 
 ## Hetzner Storage Box Setup with SSH Key Authentication on NixOS
 
-This guide explains how to configure a Hetzner Storage Box to allow SSH access from a NixOS server using a securely stored private key at `/etc/keys/id_storagebox`.
+This guide explains how to configure a Hetzner Storage Box to allow SSH access
+from a NixOS server using a securely stored private key at
+`/etc/keys/id_storagebox`.
 
 ---
 
@@ -184,5 +143,6 @@ Replace uXXXXX with your actual Storage Box ID:
 cat /etc/keys/id_storagebox.pub | ssh -p 23 uXXXXX@uXXXXX.your-storagebox.de install-ssh-key
 ```
 
-Do this from any other clients that need access to the storage box too (e.g. to mirror the backups locally using restic)
+Do this from any other clients that need access to the storage box too (e.g. to
+mirror the backups locally using restic)
 
