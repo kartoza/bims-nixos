@@ -12,6 +12,7 @@
   ];
 
   boot.loader.grub = {
+    configurationLimit = 5;
     enable = true;
     efiSupport = true;
     efiInstallAsRemovable = true; # Install GRUB to fallback path: EFI/BOOT/BOOTX64.EFI

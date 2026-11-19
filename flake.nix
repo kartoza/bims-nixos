@@ -1,7 +1,7 @@
 {
   description = "NixOS configuration";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
   inputs.disko.url = "github:nix-community/disko";
   inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -57,10 +57,6 @@
           ./robot.nix
           ./linux.nix
           ./storage.nix
-          ./grafana.nix
-          ./loki-promtail.nix
-          ./prometheus.nix
-          ./grafana-dashboards.nix
         ];
       };
       
